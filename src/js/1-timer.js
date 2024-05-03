@@ -47,6 +47,20 @@ const initializeDateTimePicker = () => {
   }
 };
 
+const convertMs = ms => {
+  const second = 1000;
+  const minute = second * 60;
+  const hour = minute * 60;
+  const day = hour * 24;
+
+  const days = Math.floor(ms / day);
+  const hours = Math.floor((ms % day) / hour);
+  const mins = Math.floor(((ms % day) % hour) / minute);
+  const secs = Math.floor((((ms % day) % hour) % minute) / second);
+
+  return { days, hours, mins, secs };
+};
+
 initializeDateTimePicker();
 
 const dateIsOk = () => {
@@ -71,6 +85,7 @@ btnStart.addEventListener('click', () => {
       inputId.disabled = true;
       localStorage.setItem('timerRunning', true);
 
+      // Запуск таймера
       timerInterval = setInterval(() => {
         const currentTime = Date.now();
         const deltaTime = userSelectedDate - currentTime;
@@ -78,7 +93,7 @@ btnStart.addEventListener('click', () => {
           clearInterval(timerInterval);
           updateClockface({ days: '00', hours: '00', mins: '00', secs: '00' });
         } else {
-          const time = getTimeComponents(deltaTime);
+          const time = convertMs(deltaTime);
           updateClockface(time);
         }
       }, 1000);
@@ -99,32 +114,19 @@ if (timerRunning) {
       clearInterval(timerInterval);
       updateClockface({ days: '00', hours: '00', mins: '00', secs: '00' });
     } else {
-      const time = getTimeComponents(deltaTime);
+      const time = convertMs(deltaTime);
       updateClockface(time);
     }
-  }, 1000);
+  }, 0);
 }
 
-function getTimeComponents(time) {
-  const days = pad(Math.max(0, Math.floor(time / (1000 * 60 * 60 * 24))));
-  const hours = pad(
-    Math.max(0, Math.floor((time % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)))
-  );
-  const mins = pad(
-    Math.max(0, Math.floor((time % (1000 * 60 * 60)) / (1000 * 60)))
-  );
-  const secs = pad(Math.max(0, Math.floor((time % (1000 * 60)) / 1000)));
-
-  return { days, hours, mins, secs };
+function updateClockface({ days, hours, mins, secs }) {
+  dataDays.textContent = pad(days);
+  dataHours.textContent = pad(hours);
+  dataMinutes.textContent = pad(mins);
+  dataSeconds.textContent = pad(secs);
 }
 
 function pad(value) {
   return String(value).padStart(2, '0');
-}
-
-function updateClockface({ days, hours, mins, secs }) {
-  dataDays.textContent = `${days}`;
-  dataHours.textContent = `${hours}`;
-  dataMinutes.textContent = `${mins}`;
-  dataSeconds.textContent = `${secs}`;
 }
