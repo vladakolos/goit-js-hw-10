@@ -1,0 +1,16 @@
+.timer {
+  display: flex;
+  gap: 20px;
+  margin-top: 25px;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+.value {
+  font-size: 35px;
+}
+button {
+  cursor: pointer;
+}
